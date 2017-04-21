@@ -114,6 +114,18 @@ class Group:
         final_url += ('&PBX_HMAC=%s' % self.generate_hmac(get_url_part))
         return final_url
 
+    def fail_payments(cls, groups):
+        Payment = Pool().get('account.payment')
+        for group in groups:
+            if group.processing_payments:
+                Payment.fail(Payment.search([('group', '=', group.id),
+                    ('state', '=', 'processing')]))
+
+    @classmethod
+    def reject_payment_group(cls, groups, **kwargs):
+        Group = Pool().get('account.payment.group')
+        Group.fail_payments(groups)
+
 
 class Journal:
     __metaclass__ = PoolMeta
