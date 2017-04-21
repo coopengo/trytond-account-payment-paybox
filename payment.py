@@ -70,7 +70,7 @@ class Group:
         pass
 
     def processing_payment_amount(self):
-        return abs(sum([x.amount for x in self.processing_payments()]))
+        return sum([x.amount for x in self.get_processing_payments()])
 
     def generate_paybox_url(self):
         if self.kind != 'receivable':
@@ -121,7 +121,7 @@ class Group:
         final_url += ('&PBX_HMAC=%s' % self.generate_hmac(get_url_part))
         return final_url
 
-    def processing_payments(self):
+    def get_processing_payments(self):
         Payment = Pool().get('account.payment')
         return Payment.search([('group', '=', self.id),
                 ('state', '=', 'processing')])
@@ -130,7 +130,7 @@ class Group:
     def update_processing_payments(cls, groups, method_name):
         Payment = Pool().get('account.payment')
         method = getattr(Payment, method_name)
-        method(sum([list(x.processing_payments()) for x in groups], []))
+        method(sum([list(x.get_processing_payments()) for x in groups], []))
 
     @classmethod
     def reject_payment_group(cls, groups, *args):
