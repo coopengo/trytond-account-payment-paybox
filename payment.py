@@ -58,7 +58,7 @@ class Group:
                     'payments' % required_paybox_param)
         cls.__rpc__.update({
             'reject_payment_group': RPC(readonly=False, instantiate=0),
-            'succeed_payment_group': RPC(readonly=False,instantiate=0)
+            'succeed_payment_group': RPC(readonly=False,instantiate=0),
             })
 
 
@@ -69,16 +69,17 @@ class Group:
     def process_paybox(self):
         pass
 
+    def processing_payment_amount(self):
+        return abs(sum([x.amount for x in self.processing_payments()]))
+
     def generate_paybox_url(self):
         if self.kind != 'receivable':
             self.raise_user_error('only_receivable_allowed')
         Payment = Pool().get('account.payment')
         self.number = self.generate_paybox_transaction_id()
-        if self.payments:
-            Payment.write(list(self.payments), {'merged_id': self.number})
-            if self.amount > 0:
-                self.payment_url = self.paybox_url_builder()
-                return self.payment_url
+        if self.processing_payment_amount() > 0:
+            self.payment_url = self.paybox_url_builder()
+            return self.payment_url
         return None
 
     def generate_paybox_transaction_id(self, hash_method='md5'):
@@ -103,7 +104,7 @@ class Group:
         parameters['PBX_SITE'] = config.get('paybox', 'PBX_SITE')
         parameters['PBX_RANG'] = config.get('paybox', 'PBX_RANG')
         parameters['PBX_IDENTIFIANT'] = config.get('paybox', 'PBX_IDENTIFIANT')
-        parameters['PBX_TOTAL'] = int(self.amount * 100)
+        parameters['PBX_TOTAL'] = int(self.processing_payment_amount() * 100)
         parameters['PBX_DEVISE'] = company.currency.numeric_code
         parameters['PBX_CMD'] = self.number
         parameters['PBX_PORTEUR'] = self.payments[0].party.email
@@ -120,16 +121,19 @@ class Group:
         final_url += ('&PBX_HMAC=%s' % self.generate_hmac(get_url_part))
         return final_url
 
+    def processing_payments(self):
+        Payment = Pool().get('account.payment')
+        return Payment.search([('group', '=', self.id),
+                ('state', '=', 'processing')])
+
+    @classmethod
     def update_processing_payments(cls, groups, method_name):
         Payment = Pool().get('account.payment')
         method = getattr(Payment, method_name)
-        for group in groups:
-            if group.processing_payments:
-                method(Payment.search([('group', '=', group.id),
-                    ('state', '=', 'processing')]))
+        method(sum([list(x.processing_payments()) for x in groups], []))
 
     @classmethod
-    def reject_payment_group(cls, groups, **kwargs):
+    def reject_payment_group(cls, groups, *args):
         Group = Pool().get('account.payment.group')
         Group.update_processing_payments(groups, 'fail')
 
