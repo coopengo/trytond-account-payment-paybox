@@ -55,6 +55,11 @@ class Group:
                 cls.logger.warning('[PAYBOX]: variable "%s" is not set in '
                     'paybox section. It is required in order to process paybox '
                     'payments' % required_paybox_param)
+        cls.__rpc__.update({
+            'reject_payment_group': RPC(readonly=False, instantiate=0),
+            'succeed_payment_group': RPC(readonly=False,instantiate=0)
+            })
+
 
     def get_journal_method(self, name):
         if self.journal:
@@ -114,17 +119,23 @@ class Group:
         final_url += ('&PBX_HMAC=%s' % self.generate_hmac(get_url_part))
         return final_url
 
-    def fail_payments(cls, groups):
+    def update_processing_payments(cls, groups, method_name):
         Payment = Pool().get('account.payment')
+        method = getattr(Payment, method_name)
         for group in groups:
             if group.processing_payments:
-                Payment.fail(Payment.search([('group', '=', group.id),
+                method(Payment.search([('group', '=', group.id),
                     ('state', '=', 'processing')]))
 
     @classmethod
     def reject_payment_group(cls, groups, **kwargs):
         Group = Pool().get('account.payment.group')
-        Group.fail_payments(groups)
+        Group.update_processing_payments(groups, 'fail')
+
+    @classmethod
+    def succeed_payment_group(cls, groups, **kwargs):
+        Group = Pool().get('account.payment.group')
+        Group.update_processing_payments(groups, 'succeed')
 
 
 class Journal:
