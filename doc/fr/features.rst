@@ -1,1 +1,1 @@
-- **Gestion des paiments "paybox system"**
+- **Gestion des paiements "paybox system"**

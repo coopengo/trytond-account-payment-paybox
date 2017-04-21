@@ -7,6 +7,7 @@ import hashlib
 import datetime
 from collections import OrderedDict
 
+from trytond.rpc import RPC
 from trytond.config import config
 from trytond.pool import PoolMeta, Pool
 from trytond.wizard import StateAction
@@ -49,7 +50,7 @@ class Group:
                 'payment at the same time',
                 })
         for required_paybox_param in ('PBX_SITE', 'PBX_RANG', 'secret',
-                'PBX_IDENTIFIANT', 'PBX_RETOUR', 'main_url'):
+                'PBX_IDENTIFIANT', 'PBX_RETOUR', 'paybox_url'):
             required_param = config.get('paybox', required_paybox_param)
             if required_param is None:
                 cls.logger.warning('[PAYBOX]: variable "%s" is not set in '
