@@ -3,6 +3,7 @@ const fs = require('fs');
 const co = require('co');
 const koa = require('koa');
 const crypto = require('crypto');
+const debug = require('debug');
 const Session = require('tryton-session');
 const model = require('tryton-model');
 const qs = require('querystring');
@@ -18,15 +19,15 @@ function* verify() {
   if (fs.existsSync(config.PUBKEY_PATH) === false) {
     throw new PayboxError('public key: no such file');
   }
-  console.log('verifying signature');
+  debug('verifying signature');
   const pubkey = fs.readFileSync(config.PUBKEY_PATH, 'utf-8');
   const verifier = crypto.createVerify(config.HASH);
   var buffer = _.join(_.map(_.omit(this.query, 'signature'), (value, key) => {
     return `${key}=${value}`
   }), '&');
   var signature = _.get(this.query, 'signature');
-  buffer = unescape(buffer);
-  signature = Buffer.from(unescape(signature), 'base64');
+  buffer = qs.unescape(buffer);
+  signature = Buffer.from(qs.unescape(signature), 'base64');
   verifier.update(buffer);
   if (verifier.verify(pubkey, signature) === false) {
     throw new PayboxError('invalid signature');
@@ -34,7 +35,7 @@ function* verify() {
 }
 
 function* login() {
-  console.log('login');
+  debug('login');
   this.tryton = new Session(config.COOG_URL, config.COOG_DB);
   yield this.tryton.start(config.COOG_USER, {
     password: config.COOG_PASS
@@ -42,7 +43,7 @@ function* login() {
 }
 
 function* logout() {
-  console.log('logout');
+  debug('logout');
   var tryton = this.tryton;
   delete this.tryton;
   yield tryton.stop();
@@ -62,14 +63,14 @@ function* paybox() {
   }
   const record = _.first(payments.records);
   if (_.isEqual(code, '00000')) {
-    console.log('payment success');
+    debug('payment success');
     const method = 'model.account.payment.group.succeed_payment_group'
     yield this.tryton.rpc(method, [
       [record.id]
     ]);
   }
   else {
-    console.log('payment fail');
+    debug('payment fail');
     const method = 'model.account.payment.group.reject_payment_group'
     yield this.tryton.rpc(method, [
       [record.id], code
@@ -89,9 +90,11 @@ co(function* () {
     var app = new koa();
     app.on('error', function (err) {
       console.error(err.name + ': ' + err.message);
+      console.log(err);
     });
     app.use(function* (next) {
       console.log('received request from: ' + this.origin);
+      console.log(this.query);
       try {
         yield next;
       }

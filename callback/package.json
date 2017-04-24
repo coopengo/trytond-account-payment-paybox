@@ -5,8 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "forever start -w index.js",
-    "stop": "forever stopall",
-    "logs": "forever logs 0 -f",
     "pem": "wget http://www1.paybox.com/wp-content/uploads/2014/03/pubkey.pem -O paybox.pem"
   },
   "author": "Coopengo <dev@coopengo.com>",
@@ -14,6 +12,7 @@
     "co": "^4",
     "koa": "^1",
     "lodash": "^4",
+    "debug": "^2",
     "tryton-model": "~4.2",
     "tryton-session": "~4.2"
   }
