@@ -6,9 +6,9 @@ fromEnv = _.mapKeys(fromEnv, (v, k) => k.substring(PREFIX.length));
 module.exports = _.assign({
   PORT: 3000,
   COOG_URL: 'http://localhost:8000',
-  COOG_DB: 'spb',
-  COOG_USER: 'admin',
-  COOG_PASS: 'Coopengo',
+  COOG_DB: '',
+  COOG_USER: '',
+  COOG_PASS: '',
   HASH: 'RSA-SHA1',
   PUBKEY_PATH: './paybox.pem',
 }, fromEnv);
