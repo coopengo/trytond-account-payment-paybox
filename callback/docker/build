@@ -1,0 +1,12 @@
+#!/bin/sh
+
+(cd .. && tar -czvf docker/coog-paybox-callback.tar.gz \
+    config.js \
+    index.js \
+    package.json)
+
+mkdir coog-paybox-callback && \
+    tar -xvzf coog-paybox-callback.tar.gz -C coog-paybox-callback && \
+    docker build -t "coog/paybox-callback:1.0" .
+
+rm -rf coog-paybox-callback*
