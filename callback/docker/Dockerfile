@@ -1,6 +1,6 @@
 FROM node:6-alpine
 
-COPY coog-paybox-callback /coog-paybox-callback
+COPY coog-paybox-callback/callback /coog-paybox-callback
 
 WORKDIR /coog-paybox-callback
 

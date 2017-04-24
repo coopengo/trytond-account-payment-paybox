@@ -1,12 +1,15 @@
 #!/bin/sh
 
-(cd .. && tar -czvf docker/coog-paybox-callback.tar.gz \
-    config.js \
-    index.js \
-    package.json)
+[ -z "$1" ] && echo missing branch or tag >&2 && exit 1
+
+(cd .. && git archive -o docker/coog-paybox-callback.tar.gz "$1")
+# (cd .. && tar -czvf docker/coog-paybox-callback.tar.gz \
+#     config.js \
+#     index.js \
+#     package.json)
 
 mkdir coog-paybox-callback && \
-    tar -xvzf coog-paybox-callback.tar.gz -C coog-paybox-callback && \
-    docker build -t "coog/paybox-callback:1.0" .
+    tar -xf coog-paybox-callback.tar.gz -C coog-paybox-callback && \
+    docker build -t "coog/paybox-callback:$1" .
 
 rm -rf coog-paybox-callback*
