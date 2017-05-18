@@ -112,7 +112,7 @@ co(function* () {
         yield next;
       }
       catch (err) {
-        this.applogger.info.emit('error', err, this);
+        this.app.emit('error', err, this);
       }
     });
     app.use(main);
