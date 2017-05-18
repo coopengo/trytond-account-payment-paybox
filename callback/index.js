@@ -4,6 +4,8 @@ const co = require('co');
 const koa = require('koa');
 const crypto = require('crypto');
 const debug = require('debug');
+const winston = require('winston');
+const moment = require('moment');
 const Session = require('tryton-session');
 const model = require('tryton-model');
 const qs = require('querystring');
@@ -14,6 +16,17 @@ function PayboxError(message) {
   this.name = this.constructor.name;
   this.message = message;
 }
+
+const logger = new (winston.Logger)({
+  transports: [
+    new (winston.transports.Console)({
+      timestamp: function() {
+        return '[' + moment().format('YYYY-MM-DD HH:MM:SS') + ']';
+      },
+      colorize: true
+    })
+  ]
+});
 
 function* verify() {
   if (fs.existsSync(config.PUBKEY_PATH) === false) {
@@ -89,21 +102,20 @@ co(function* () {
     model.init(Session);
     var app = new koa();
     app.on('error', function (err) {
-      console.error(err.name + ': ' + err.message);
-      console.log(err);
+      logger.error(err);
     });
     app.use(function* (next) {
-      console.log('received request from: ' + this.origin);
-      console.log(this.query);
+      logger.info('received request from: ' + this.origin);
+      logger.info(this.query);
       try {
         yield next;
       }
       catch (err) {
-        this.app.emit('error', err, this);
+        this.applogger.info.emit('error', err, this);
       }
     });
     app.use(main);
     app.listen(config.PORT);
-    return 'Listening on port ' + config.PORT + ' ...'
+    return 'Listening on port: ' + config.PORT + '...';
 })
-.then(console.log, console.error);
+.then(logger.info, logger.error);
