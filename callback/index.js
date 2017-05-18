@@ -23,7 +23,8 @@ const logger = new (winston.Logger)({
       timestamp: function() {
         return '[' + moment().format('YYYY-MM-DD HH:MM:SS') + ']';
       },
-      colorize: true
+      colorize: true,
+      prettyPrint: true
     })
   ]
 });
