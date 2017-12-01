@@ -23,7 +23,7 @@ const verify = async (ctx, next) => {
   debug('verify')
   const query = Object.assign({}, ctx.query)
   ctx.assert(query.signature, 'missing signature')
-  const signature = Buffer.from(qs.unescape(query.signature))
+  const signature = Buffer.from(qs.unescape(query.signature), 'base64')
   delete query.signature
   const buffer = qs.unescape(qs.stringify(query))
   const verifier = crypto.createVerify(config.HASH_METHOD)
@@ -74,6 +74,7 @@ const treat = async (ctx) => {
       [payment.id], code
     ])
   }
+  ctx.body = 'OK'
 }
 
 const main = async () => {
@@ -94,4 +95,7 @@ const main = async () => {
   return 'web server started on port ' + config.PORT
 }
 
-main().then(console.log, console.err)
+main().then(console.log, (err) => {
+  console.error(err)
+  process.exit(1)
+})
