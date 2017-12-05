@@ -75,3 +75,4 @@ and through away).
 
 Nota: the payment group number is the paybox transaction reference, so you can go to the paybox backoffice with this number
 to retrieve the logs of the payment transaction.
+If an error occurs during the transaction, the code will be printed in the callback server logs. You can check from the [paybox documentation guide](http://www1.paybox.com/wp-content/uploads/2017/08/ManuelIntegrationVerifone_PayboxSystem_V8.0_EN.pdf) (Page 65) what does this code means.
