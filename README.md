@@ -32,10 +32,31 @@ Once you have filled those variables with your data, the server must be restarte
 All the sources are into the "callback" directory of the account_payment_paybox module
 
 ### With docker
-To Do
 
-### As node endpoint
-To Do
+build:
+```
+npm run docker
+```
+
+run: 
+```
+docker run -d
+-e PAYBOX_PORT=
+-e PAYBOX_TRYTON_URL=
+-e PAYBOX_TRYTON_DB=
+-e PAYBOX_TRYTON_USERNAME=
+-e PAYBOX_TRYTON_PASSWORD=
+coopengo/paybox
+```
+
+### As a node endpoint
+
+```
+cd callback
+node .
+```
+
+*NB: You may need to run npm i  before run node into the callback directory*
 
 ## The Paybox Journal
 To create and process payments, you'll need to configure a new payment journal using "Paybox" as process method.
