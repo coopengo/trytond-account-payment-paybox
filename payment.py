@@ -116,7 +116,6 @@ class Group(metaclass=PoolMeta):
             parameters['PBX_TYPEPAIEMENT'] = config.get('PBX_TYPEPAIEMENT')
         if config.get('PBX_TYPEPAIEMENT'):
             parameters['PBX_TYPECARTE'] = config.get('PBX_TYPECARTE')
-
         valid_values = [(key, value) for key, value in parameters.items()
             if value is not None]
         get_url_part = '&'.join(['%s=%s' % (var_name, value) for
