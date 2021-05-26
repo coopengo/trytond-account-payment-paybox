@@ -1,4 +1,4 @@
-FROM node:8-alpine
+FROM node:15-alpine
 
 RUN mkdir paybox-callback
 
