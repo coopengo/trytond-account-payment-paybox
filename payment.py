@@ -96,7 +96,7 @@ class Group(metaclass=PoolMeta):
         parameters = OrderedDict()
         for required_paybox_param in ('PBX_SITE', 'PBX_RANG', 'secret',
                 'PBX_IDENTIFIANT', 'PBX_RETOUR', 'payment_url'):
-            required_param = config.get('paybox', required_paybox_param)
+            required_param = config.get(required_paybox_param)
             if required_param is None:
                 raise UserError(gettext(
                     'account_payment_paybox.msg_missing_paybox_configuration',
