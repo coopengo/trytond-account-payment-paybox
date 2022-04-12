@@ -1,3 +1,4 @@
+*FEA#22865 Ajout des variables de configuration: PBX_EFFECTUE, PBX_REFUSE et PBX_ANNULE
 *FEA#14641 Ajout des variables de configuration: PBX_TYPEPAIEMENT et PBX_TYPECARTE
 *FEA#6542 Améliorations: Vérifications de sécurité et possibilité de recherche sur la méthode de journal du groupe de paiement
 
